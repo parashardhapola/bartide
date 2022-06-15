@@ -32,6 +32,8 @@ setup(
         "tqdm",
         "pandas",
         "joblib",
+        "seaborn",
+        "upsetplot",
     ],
     extras_require={"dev": ["pytest", "pytest-pep8", "pytest-cov", "black"]},
     keywords=["Text Mining", "Barcode", "nucleotide", "sequencing", "deduplicate"],

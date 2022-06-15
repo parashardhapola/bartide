@@ -9,7 +9,7 @@ import numpy as np
 from .config import logger
 
 
-class BarcodesPE:
+class BarcodeExtractor:
     def __init__(
         self,
         read1_file: str,
@@ -47,7 +47,7 @@ class BarcodesPE:
 
     def identify_flanks(
         self,
-        max_frac_threshold: float = 0.8,
+        max_frac_threshold: float = 0.6,
         flank_size: int = 6,
         n_rows: Optional[int] = None,
     ):
