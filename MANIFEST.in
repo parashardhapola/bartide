@@ -1,1 +1,8 @@
-global-include *.txt *.py
+recursive-exclude * __pycache__
+recursive-exclude * *.pyc
+recursive-exclude * *.pyo
+exclude .gitignore
+prune bartide.egg-info
+prune notebooks
+prune .github
+include VERSION

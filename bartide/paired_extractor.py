@@ -19,7 +19,7 @@ class BarcodeExtractor:
         barcode_length: Optional[int] = None,
         max_dist: int = 3,
         max_read_length: int = 200,
-        disable_progress_bar: bool = False
+        disable_progress_bar: bool = False,
     ):
         """
         Extract barcodes from paired-end FASTQ files. The files can be gunzip.
@@ -74,7 +74,11 @@ class BarcodeExtractor:
         """
         nuc_comp = {x: {x: 0 for x in "ATGCN"} for x in range(self.maxReadLength)}
         n = 0
-        for seq1 in tqdm(self._read_fastq(self.r1Fn), desc="Identifying flank sequences", disable=self.disablePb):
+        for seq1 in tqdm(
+            self._read_fastq(self.r1Fn),
+            desc="Identifying flank sequences",
+            disable=self.disablePb,
+        ):
             for p, i in enumerate(seq1):
                 nuc_comp[p][i] += 1
             n += 1
@@ -128,9 +132,7 @@ class BarcodeExtractor:
                 return seq[valid_comb[0][0] : valid_comb[0][1]]
         return None
 
-    def _stream_reads(
-        self
-    ) -> Generator[Tuple[str, str], None, None]:
+    def _stream_reads(self) -> Generator[Tuple[str, str], None, None]:
         for seq1, seq2 in zip(self._read_fastq(self.r1Fn), self._read_fastq(self.r2Fn)):
             yield seq1, seq2
         return None
@@ -156,7 +158,9 @@ class BarcodeExtractor:
         n, f1, f2 = 0, 0, 0
         max_len = 0
         nuc_comp = {x: {x: 0 for x in "ATGCN"} for x in range(self.maxReadLength)}
-        for seq1, seq2 in tqdm(self._stream_reads(), disable=self.disablePb, desc="Counting barcodes"):
+        for seq1, seq2 in tqdm(
+            self._stream_reads(), disable=self.disablePb, desc="Counting barcodes"
+        ):
             if len(seq1) > max_len:
                 max_len = len(seq1)
             for p, i in enumerate(seq1):
@@ -200,9 +204,9 @@ class BarcodeExtractor:
             logger.info(f"Maximum observed read length is {max_len}")
             self.maxReadLength = max_len
         self.nucComp = pd.DataFrame(nuc_comp).T.sort_index()[: self.maxReadLength]
-        self.rawCounts = pd.Series(dict(
-            sorted(counts.items(), key=lambda item: item[1], reverse=True)
-        ))
+        self.rawCounts = pd.Series(
+            dict(sorted(counts.items(), key=lambda item: item[1], reverse=True))
+        )
 
     def plot_composition(
         self,
@@ -241,12 +245,7 @@ class BarcodeExtractor:
         :return:
         """
         fig, ax = plt.subplots(1, 1, figsize=fig_size)
-        x = (
-            self.rawCounts
-            .apply(np.log10)
-            .sort_values(ascending=False)
-            .reset_index()[0]
-        )
+        x = self.rawCounts.apply(np.log10).sort_values(ascending=False).reset_index()[0]
         x.plot(kind="line", ax=ax, lw=4)
         ax.set_xlabel("Barcodes sorted by frequency", fontsize=12)
         ax.set_ylabel("Log10 frequency", fontsize=12)

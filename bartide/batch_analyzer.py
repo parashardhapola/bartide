@@ -18,15 +18,15 @@ class BarcodeAnalyzer:
         """
 
         self.barcodes = {}
-        for i in sorted(glob(f'./{directory}/*.csv')):
-            name = pathlib.Path(i).name.replace('.csv', '')
+        for i in sorted(glob(f"./{directory}/*.csv")):
+            name = pathlib.Path(i).name.replace(".csv", "")
             self.barcodes[name] = pd.read_csv(i, header=None, index_col=0)[1]
 
         if len(self.barcodes) == 0:
             logger.error(f"No barcodes found in the directory {directory}")
         else:
             self.barcodes = pd.DataFrame(self.barcodes).fillna(0).astype(int)
-            self.barcodes.index.rename('barcodes', inplace=True)
+            self.barcodes.index.rename("barcodes", inplace=True)
             logger.info(f"{len(self.barcodes.columns)} barcode files found")
 
     def merge_groups(self, group_vec: List[str]) -> None:

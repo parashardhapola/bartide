@@ -16,7 +16,7 @@ class SeqCorrect:
         ann_post: int = 0,
         n_threads: int = 2,
         ann_ef_search: int = 100,
-        disable_progress_bar: bool = False
+        disable_progress_bar: bool = False,
     ):
         """
         Class for identifying erroneous barcodes and merging their frequency with their correct version.
@@ -69,7 +69,12 @@ class SeqCorrect:
             bc_list, k=self.annK, num_threads=self.indexParams["indexThreadQty"]
         )
         nm = {}
-        for n, i in tqdm(enumerate(nbrs), total=len(nbrs), desc="Querying ANN index", disable=self.disablePb):
+        for n, i in tqdm(
+            enumerate(nbrs),
+            total=len(nbrs),
+            desc="Querying ANN index",
+            disable=self.disablePb,
+        ):
             a = bc_list[n]
             for j in i[0]:
                 b = bc_list[j]
@@ -87,7 +92,9 @@ class SeqCorrect:
                     nm[a] = b
         return nm
 
-    def _correct(self, raw_counts: Dict[str, int], neighbors: Dict[str, str]) -> Dict[str, int]:
+    def _correct(
+        self, raw_counts: Dict[str, int], neighbors: Dict[str, str]
+    ) -> Dict[str, int]:
         bc_list = list(raw_counts.keys())
         cor_counts = {}
         for i in tqdm(bc_list, desc="Merging barcodes", disable=self.disablePb):
@@ -100,7 +107,9 @@ class SeqCorrect:
             cor_counts[a] += raw_counts[i]
 
         clean_counts = {}
-        for i in tqdm(cor_counts, desc="Filtering corrected barcodes", disable=self.disablePb):
+        for i in tqdm(
+            cor_counts, desc="Filtering corrected barcodes", disable=self.disablePb
+        ):
             if raw_counts[i] <= cor_counts[i] and cor_counts[i] > self.minCounts:
                 clean_counts[i] = cor_counts[i]
         return clean_counts
