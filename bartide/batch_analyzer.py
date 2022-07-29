@@ -112,6 +112,7 @@ class BarcodeAnalyzer:
         ax.set_xticklabels(p_overlap.index, rotation=rotation)
         ax.legend(loc=(1.1, 0.5))
         ax.set_ylabel("% barcode overlap")
+        plt.tight_layout()
         if save_name is not None:
             plt.savefig(save_name, dpi=300)
         plt.show()
@@ -130,7 +131,7 @@ class BarcodeAnalyzer:
         fig = plt.figure(figsize=fig_size)
         plot(xdf, sort_by="cardinality", fig=fig)
         if save_name is not None:
-            plt.savefig(save_name)
+            plt.savefig(save_name, dpi=300)
         plt.show()
 
     def plot_weighted_heatmap(
@@ -152,7 +153,7 @@ class BarcodeAnalyzer:
             self.calc_weighted_overlap(), cmap=cmap, figsize=fig_size, robust=robust
         )
         if save_name is not None:
-            plt.savefig(save_name)
+            plt.savefig(save_name, dpi=300)
         plt.show()
 
     def plot_overlap_heatmap(
@@ -180,5 +181,5 @@ class BarcodeAnalyzer:
             robust=robust,
         )
         if save_name is not None:
-            plt.savefig(save_name)
+            plt.savefig(save_name, dpi=300)
         plt.show()
