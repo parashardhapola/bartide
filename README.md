@@ -132,7 +132,7 @@ analyzer.plot_overlap_heatmap()
 
 In all the above three plotting functions, we do not the frequencies of the barcodes, which are indicative of how dominant a particular barcode is in the samples. A weighted overlap of barcodes is calculated between two samples as following:
 
-$\sum_{b}^{B}\left(S_b^i-S_b^j\right)^2$
+$$\sum_{b}^{B}\left(S_b^i-S_b^j\right)^2$$
 
 Wherein, $S$ is a column-sum normalized matrix of samples (columns) and barcodes (rows) containing barcode frequencies, $i$ and $j$ are two samples, $b$ is a barcode in a set of barcodes $B$ that are present in either of the two samples or both. These overlap values are then plotted in form of a heatmap using the following function:
 
