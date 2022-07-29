@@ -1,6 +1,7 @@
 .idea
 bartide.egg-info/
 build/
+dist/
+notebooks/.ipynb_checkpoints/
 notebooks/test_data/*.csv
 README.md.backup
-notebooks/.ipynb_checkpoints
