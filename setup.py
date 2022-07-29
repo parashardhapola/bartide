@@ -25,7 +25,6 @@ setup(
     ],
     install_requires=[
         "numpy",
-        "nmslib",
         "matplotlib",
         "loguru",
         "editdistance",

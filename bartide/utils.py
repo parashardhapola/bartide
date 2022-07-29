@@ -12,6 +12,14 @@ def glob_files(
     read2_pattern: str = "R2",
     file_extension: str = "fastq.gz",
 ) -> Generator[Tuple[str, str], None, None]:
+    """
+
+    :param directory:
+    :param read1_pattern:
+    :param read2_pattern:
+    :param file_extension:
+    :return:
+    """
     if os.path.isdir(directory):
         logger.debug("Directory found!")
     else:
