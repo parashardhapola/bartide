@@ -9,6 +9,8 @@ from glob import glob
 import pathlib
 from .config import logger
 
+plt.rcParams["svg.fonttype"] = "none"
+
 
 class BarcodeAnalyzer:
     def __init__(self, directory: str) -> None:

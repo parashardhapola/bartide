@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from .config import logger
 
+plt.rcParams["svg.fonttype"] = "none"
+
 
 class BarcodeExtractor:
     def __init__(
