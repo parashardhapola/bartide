@@ -114,7 +114,7 @@ The first plot is the ‘Upset’ that shows all the combinations of samples and
 ```
 analyzer.plot_upset()
 ```
-<img src="./notebooks/images/upset_plot.png" alt="upset_plot" width="300"/>
+<img src="./notebooks/images/upset_plot.png" alt="upset_plot" width="400"/>
 
 Sometimes due large difference in the number of barcodes captured, it might be difficult to easily identify the similarity or differences between the samples. To solve this, rather than using the absolute number of barcodes in a sample, the percentage overlap of barcodes from a sample with all other samples are used. This allows the barcodes from a sample to be defined in proportions and may allow insights into sample similarity that is otherwise to identify with absolute frequencies. The following command shows the proportions in form of a stacked barplot:
 
