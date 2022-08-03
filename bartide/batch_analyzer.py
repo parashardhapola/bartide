@@ -83,7 +83,7 @@ class BarcodeAnalyzer:
                     if corrected:
                         overlap[i][j] = overlap[i][j] / ((df[i] + df[j]) > 0).sum()
                 else:
-                    overlap[i][j] = ((df[i] > 0) & (df.sum(axis=1))).sum()
+                    overlap[i][j] = ((df[i] > 0) & (df.sum(axis=1) == 1)).sum()
                     if corrected:
                         overlap[i][j] = 1
         return pd.DataFrame(overlap)
