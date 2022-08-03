@@ -2,14 +2,15 @@ import pandas as pd
 import seaborn as sns
 import numpy as np
 import matplotlib.pyplot as plt
-from upsetplot import from_contents
+from upsetplot import from_memberships
 from upsetplot import plot
-from typing import List, Tuple
+from typing import List, Tuple, Union
 from glob import glob
 import pathlib
 from .config import logger
 
 plt.rcParams["svg.fonttype"] = "none"
+plt.rcParams["pdf.fonttype"] = 42
 
 
 class BarcodeAnalyzer:
@@ -51,7 +52,21 @@ class BarcodeAnalyzer:
         self.barcodes = self.barcodes[columns]
         self.barcodes = self.barcodes[self.barcodes.sum(axis=1) != 0]
 
-    def calc_overlap(self, corrected: bool = False) -> pd.DataFrame:
+    def total_barcodes(self) -> pd.Series:
+        df = self.barcodes.copy()
+        df[df > 0] = 1
+        return df.sum()
+
+    def all_overlaps(self, count: bool = True) -> Union[int, pd.DataFrame]:
+        df = self.barcodes.copy()
+        df[df > 0] = 1
+        xdf = df.sum(axis=1) == len(df.columns)
+        if count:
+            return xdf.sum()
+        else:
+            return df[xdf]
+
+    def calc_pairwise_overlap(self, corrected: bool = False) -> pd.DataFrame:
         """
 
         :param corrected:
@@ -63,10 +78,33 @@ class BarcodeAnalyzer:
         for i in df.columns:
             overlap[i] = {}
             for j in df.columns:
-                overlap[i][j] = ((df[i] + df[j]) == 2).sum()
-                if corrected:
-                    overlap[i][j] = overlap[i][j] / ((df[i] + df[j]) > 0).sum()
+                if i != j:
+                    overlap[i][j] = ((df[i] + df[j]) == 2).sum()
+                    if corrected:
+                        overlap[i][j] = overlap[i][j] / ((df[i] + df[j]) > 0).sum()
+                else:
+                    overlap[i][j] = ((df[i] > 0) & (df.sum(axis=1))).sum()
+                    if corrected:
+                        overlap[i][j] = 1
         return pd.DataFrame(overlap)
+
+    def calc_multi_overlap(self, show_missing: bool = False) -> pd.DataFrame:
+        df = self.barcodes.copy()
+        df[df > 0] = 1
+        if show_missing is False:
+            df = df[df.sum(axis=1) > 0]
+        xdf = (
+            pd.Series(["".join(map(str, x)) for x in df.values])
+            .value_counts()
+            .sort_index()
+        )
+        return from_memberships(
+            [
+                list(df.columns[np.array(list(map(int, x))).astype(bool)])
+                for x in xdf.index
+            ],
+            data=xdf.values,
+        )
 
     def calc_weighted_overlap(self) -> pd.DataFrame:
         """
@@ -89,7 +127,7 @@ class BarcodeAnalyzer:
 
         :return:
         """
-        overlap = self.calc_overlap()
+        overlap = self.calc_pairwise_overlap()
         return 100 * overlap / overlap.sum()
 
     def plot_stacked(
@@ -120,18 +158,27 @@ class BarcodeAnalyzer:
         plt.show()
 
     def plot_upset(
-        self, fig_size: Tuple[int, int] = (7, 5), save_name: str = None
+        self,
+        fig_size: Tuple[int, int] = (7, 5),
+        save_name: str = None,
+        show_counts: bool = True,
+        show_missing: bool = False,
     ) -> None:
         """
 
+        :param show_missing:
+        :param show_counts:
         :param fig_size:
         :param save_name:
         :return:
         """
-        xdf = self.barcodes > 0
-        xdf = from_contents({x: np.where(xdf[x])[0] for x in xdf})
+        table = self.calc_multi_overlap(show_missing=show_missing)
         fig = plt.figure(figsize=fig_size)
-        plot(xdf, sort_by="cardinality", fig=fig)
+        if show_counts:
+            show_counts = "%d"
+        else:
+            show_counts = None
+        plot(table, sort_by="cardinality", fig=fig, show_counts=show_counts)
         if save_name is not None:
             plt.savefig(save_name, dpi=300)
         plt.show()
@@ -173,10 +220,10 @@ class BarcodeAnalyzer:
         :param robust:
         :return:
         """
-        xdf = self.calc_overlap(corrected=True)
+        xdf = self.calc_pairwise_overlap(corrected=True)
         xdf[xdf == 1] = 0
         sns.clustermap(
-            self.calc_overlap(corrected=True),
+            self.calc_pairwise_overlap(corrected=True),
             cmap=cmap,
             figsize=fig_size,
             vmax=xdf.max().max(),
